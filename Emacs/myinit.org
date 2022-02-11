@@ -1,0 +1,361 @@
+#+STARTIP: overview
+* interface tweaks
+#+BEGIN_SRC emacs-lisp
+(tool-bar-mode nil)
+(show-paren-mode t)
+(scroll-bar-mode nil)
+(global-linum-mode t)
+(global-hl-line-mode t)
+(load-theme 'misterioso)
+(fset 'yes-or-no-p 'y-or-n-p)
+(global-set-key (kbd "<f7>") 'revert-buffer)
+#+END_SRC
+* load-path
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/aweshell"))
+#+END_SRC
+* org-mode stuff
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+:ensure t
+:config
+(add-hook 'org-mode-hook 'org-bullets-mode))
+#+END_SRC
+* lisp
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+:ensure
+:commands lsp
+:config
+(add-hook 'before-save-hook 'lsp-format-buffer)
+(setq lsp-prefer-flymake nil))
+
+(use-package lsp-ui
+:ensure
+:commands lsp-ui-mode)
+
+(use-package company-lsp
+:ensure
+:commands company-lsp)
+#+END_SRC
+* ace-window
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+:ensure t
+:init
+(progn
+(setq aw-scope 'global) ;; was frame
+(global-set-key (kbd "C-x O") 'other-frame)
+(global-set-key [remap other-window] 'ace-window)
+(custom-set-faces
+'(aw-leading-char-face
+((t (:inherit ace-jump-face-foreground :height 3.0)))))))
+#+END_SRC
+* counsel/ivy/swiper
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+:ensure t
+:bind
+(("M-y" . counsel-yank-pop)
+:map ivy-minibuffer-map
+("M-y" . ivy-next-line)))
+
+(use-package ivy
+:ensure t
+:diminish (ivy-mode)
+:bind (("C-x b" . ivy-switch-buffer))
+:config
+(ivy-mode t)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-count-format "%d/%d ")
+(setq ivy-display-style 'fancy))
+
+(use-package swiper
+:ensure t
+:bind (("C-s" . swiper-isearch)
+("C-r" . swiper-isearch)
+("C-c C-r" . ivy-resume)
+("M-x" . counsel-M-x)
+("C-x C-f" . counsel-find-file))
+:config
+(progn
+(ivy-mode t)
+(setq ivy-use-virtual-buffers t)
+(setq ivy-display-style 'fancy)
+(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)))
+#+END_SRC
+* undo-tree
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+:ensure t
+:config
+(global-undo-tree-mode t))
+#+END_SRC
+* whick key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+:ensure t
+:config
+(which-key-mode t))
+#+END_SRC
+* projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+:ensure t
+:config
+(define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
+(projectile-mode t))
+#+END_SRC
+* misc packages
+#+BEGIN_SRC emacs-lisp
+; flashes the cursor's line when you scroll
+(use-package beacon
+:ensure t
+:config
+(beacon-mode t))
+
+; deletes all the whitespace when you hit backspace or delete
+(use-package hungry-delete
+:ensure t
+:config
+(global-hungry-delete-mode t))
+
+(use-package multiple-cursors
+:ensure t)
+  
+(use-package expand-region
+:ensure t
+:config
+(global-set-key (kbd "C-=") 'er/expand-region))
+#+END_SRC
+* smartparens
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+:ensure t
+:config
+(smartparens-global-mode t))
+#+END_SRC
+* evil
+#+BEGIN_SRC emacs-lisp 
+(use-package evil
+:ensure t
+:config
+(evil-mode t)
+(setcdr evil-insert-state-map nil)
+(define-key evil-insert-state-map (read-kbd-macro evil-toggle-key) 'evil-normal-state)
+(define-key evil-insert-state-map [escape] 'evil-normal-state)
+(setq evil-normal-state 'emacs))
+#+END_SRC
+* yasnippet
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+:ensure t
+:init
+(yas-global-mode t))
+#+END_SRC
+* ccls
+#+BEGIN_SRC emacs-lisp
+(use-package ccls
+:ensure t
+:hook ((c-mode c++-mode) . (lambda () (require 'ccls) (lsp))))
+
+(setq ccls-executable "/home/li/.emacs.d/ccls/Release/ccls")
+(setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
+(setq lsp-ui-doc-include-signature nil)
+(setq lsp-ui-sideline-show-symbol nil)
+(setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+#+END_SRC
+* ycmd
+#+BEGIN_SRC emacs-lisp
+(use-package ycmd
+:ensure t
+:config
+(add-hook 'c++-mode-hook 'ycmd-mode)
+(add-hook 'c-mode-hook 'ycmd-mode)
+(set-variable 'ycmd-server-command '("/usr/bin/python3.8" "-u" "/home/li/.emacs.d/ycmd/ycmd"))
+(set-variable 'ycmd-global-config "/home/li/.emacs.d/ycmd/examples/.ycm_extra_conf.py")
+
+(defun ycmd-setup-completion-at-point-function ()
+"Setup `completion-at-point-functions' for `ycmd-mode'."
+(add-hook 'completion-at-point-functions #'ycmd-complete-at-point nil :local))
+(add-hook 'ycmd-mode-hook #'ycmd-setup-completion-at-point-function)
+
+(when (not (display-graphic-p))
+(setq flycheck-indication-mode nil)))  
+#+END_SRC
+* flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+:ensure t
+:init
+(global-flycheck-mode t))
+
+(use-package flycheck-ycmd
+:ensure t
+:after flycheck ycmd
+:config
+(flycheck-ycmd-setup))
+#+END_SRC
+* company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+:ensure t
+:config
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 3)
+(global-company-mode t))
+
+(use-package company-ycmd
+:ensure t
+:after company ycmd
+:config
+(company-ycmd-setup))
+
+(use-package company-lsp
+:ensure t
+:after company lsp
+:config
+(push 'company-lsp company-backends))
+#+END_SRC
+* treemacs
+#+BEGIN_SRC emacs-lisp
+(use-package treemacs
+:ensure t
+:defer t
+:config
+(progn
+
+(setq treemacs-follow-after-init    t
+treemacs-width                      35
+treemacs-indentation                2
+treemacs-git-integration            nil
+treemacs-collapse-dirs              3
+treemacs-silent-refresh             nil
+treemacs-change-root-without-asking nil
+treemacs-sorting                    'alphabetic-desc
+treemacs-show-hidden-files          nil
+treemacs-never-persist              nil
+treemacs-is-never-other-window      nil
+treemacs-goto-tag-strategy          'refetch-index)
+
+(treemacs-follow-mode t)
+(treemacs-filewatch-mode t))
+:bind
+(:map global-map
+([f9]        . treemacs-toggle)
+([f10]       . treemacs-projectile-toggle)
+("<C-M-tab>" . treemacs-toggle)
+("M-0"       . treemacs-select-window)
+("C-c 1"     . treemacs-delete-other-windows)))
+
+(use-package treemacs-projectile
+:defer t
+:ensure t
+:config
+(setq treemacs-header-function #'treemacs-projectile-create-header))
+
+(use-package treemacs-evil
+:after treemacs evil
+:ensure t)
+#+END_SRC
+* iedit and narrow/widen  dwim
+#+BEGIN_SRC emacs-lisp
+(use-package iedit
+:ensure t)
+
+; if you're windened, narrow to the region, if you're narrowed, widen
+; bound to C-x n
+(defun narrow-or-widen-dwim (p)
+"If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+Intelligently means: region, org-src-block, org-subtree, or defun,
+whichever applies first.
+Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+With prefix P, don't widen, just narrow even if buffer is already
+narrowed."
+(interactive "P")
+(declare (interactive-only))
+(cond ((and (buffer-narrowed-p) (not p)) (widen))
+((region-active-p)
+(narrow-to-region (region-beginning) (region-end)))
+((derived-mode-p 'org-mode)
+;; `org-edit-src-code' is not a real narrowing command.
+;; Remove this first conditional if you don't want it.
+(cond ((ignore-errors (org-edit-src-code))
+(delete-other-windows))
+((org-at-block-p)
+(org-narrow-to-block))
+(t (org-narrow-to-subtree))))
+(t (narrow-to-defun))))
+
+;; (define-key endless/toggle-map "n" #'narrow-or-widen-dwim)
+;; This line actually replaces Emacs' entire narrowing keymap, that's
+;; how much I like this command. Only copy it if that's what you want.
+(define-key ctl-x-map "n" #'narrow-or-widen-dwim)
+#+END_SRC
+* ibuffer
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(setq ibuffer-saved-filter-groups
+(quote (("default"
+("dired" (mode . dired-mode))
+("org" (name . "^.*org$"))
+("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+
+("programming" (or
+(mode . c++-mode)
+(mode . c-mode)))
+
+("emacs" (or
+(name . "^\\*scratch\\*$")
+(name . "^\\*Messages\\*$")))
+))))
+
+(add-hook 'ibuffer-mode-hook
+(lambda ()
+(ibuffer-auto-mode t)
+(ibuffer-switch-to-saved-filter-groups "default")))
+
+;; Don't show filter groups if there are no buffers in that group
+(setq ibuffer-show-empty-filter-groups nil)
+
+;; Don't ask for confirmation to delete marked buffers
+(setq ibuffer-expert t)
+#+END_SRC
+* avy
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+:ensure t
+:bind ("M-s" . avy-goto-word-1))
+#+END_SRC
+* dired
+#+BEGIN_SRC emacs-lisp
+(setq dired-dwim-target t)
+
+(use-package dired-narrow
+:ensure t
+:config
+(bind-key "C-c C-n" #'dired-narrow)
+(bind-key "C-c C-f" #'dired-narrow-fuzzy)
+(bind-key "C-x C-N" #'dired-narrow-regexp))
+
+(use-package dired-subtree 
+:ensure t
+:after dired
+:config
+(bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
+(bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
+#+END_SRC
+* magic
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+:ensure t
+:bind ("C-x g" . magit-status))
+#+END_SRC
+* aweshell 
+#+BEGIN_SRC emacs-lisp
+(autoload 'aweshell-dedicated-open "aweshell.el")
+(global-set-key (kbd "C-:") 'aweshell-dedicated-open)
+(global-set-key (kbd "C-\"") 'aweshell-dedicated-toggle)
+#+END_SRC

@@ -6,20 +6,48 @@
 
 刻录：ventoy + [manjaro && win11]
 
-## Time
-
-```shell
-sudo timedatectl set-local-rtc true
-sudo pacman -Syyu
-sudo pacman -S yay
-```
-
 ## Software
 
 ```shell
-yay -S clang llvm lld lldb cmake make wireguard-tools boost cpplint bitwarden latte-dock tldr
-yay -S gnucash wget git
-yay -S google-chrome visual-studio-code-bin
+yay -S clang llvm lld lldb cmake make boost cpplint tldr gnucash wget git vim wireguard-tools v2ray-plugin-git
+yay -S google-chrome visual-studio-code-bin fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime fcitx5-gtk
+```
+
+### rime
+
+```shell
+sudo vim ~/.xprofile
+export INPUT_METHOD=fcitx5
+export GTK_IM_MODULE=fcitx5
+export QT_IM_MODULE=fcitx5
+export XMODIFIERS=@im=fcitx5
+fcitx5 &
+```
+
+### WireGuard
+
+```shell
+
+wget --no-check-certificate -O /opt/wireguard.sh https://raw.githubusercontent.com/teddysun/across/master/wireguard.sh
+
+chmod 755 /opt/wireguard.sh
+
+/opt/wireguard.sh -s
+
+cat /etc/wireguard/wg0_client
+
+qrencode -t ansiutf8 < /etc/wireguard/wg0_client
+
+```
+
+### ss-plugins
+
+```shell
+wget -N --no-check-certificate -c -t3 -T60 -O ss-plugins.sh https://git.io/fjlbl
+
+chmod +x ss-plugins.sh
+
+./ss-plugins.sh
 ```
 
 ### Zsh
@@ -91,22 +119,17 @@ IncludeCategories:
     SortPriority:    0
 ```
 
-### WireGuard
+### Shadowsocks
+
+install
 
 ```shell
-
-wget --no-check-certificate -O /opt/wireguard.sh https://raw.githubusercontent.com/teddysun/across/master/wireguard.sh
-
-chmod 755 /opt/wireguard.sh
-
-/opt/wireguard.sh -s
-
-cat /etc/wireguard/wg0_client
-
-qrencode -t ansiutf8 < /etc/wireguard/wg0_client
+wget -N --no-check-certificate -c -t3 -T60 -O ss-plugins.sh https://git.io/fjlbl
+chmod +x ss-plugins.sh
+./ss-plugins.sh
 ```
 
-### Qt 6.2
+### Qt 6.3.1
 
 #### Qt moc link
 
@@ -170,6 +193,7 @@ git log --pretty=short
 git log --graph
 git log xx.md
 git log -p xx.md
+git reflog expire --expire=7.days.ago --expire-unreachable=now --all
 git diff
 git diff HEAD
 ```
@@ -182,6 +206,8 @@ git branch -b xx
 git branch -
 git merge --no-ff xx
 git reset --hard yyyyyyy
+git checkout --orphan
+git branch --set-upstream-to=origin/master
 git reflog
 ```
 
@@ -215,18 +241,6 @@ hardware -> input devices -> Keyboard -> advanced -> ctrl positons -> swap ctrl 
 hardware -> input devices -> Keyboard -> Hardware -> NumLock on Plasma Startup -> Turn on
 
 workspace -> workspace behavior -> activities -> privacy -> do not remember
-
-### Appearance
-
-global-theme -> Arc dark
-
-application style -> oxygen
-
-icons -> arc-icons
-
-coursors -> arc-icons
-
-splash screen -> arc dark
 
 ## Uninstall Clean
 
