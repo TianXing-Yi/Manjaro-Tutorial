@@ -131,7 +131,7 @@ chmod +x ss-plugins.sh
 
 ### Qt 6.3.1
 
-#### Qt moc link
+#### when C++ files suffix with ".hh .cc"
 
 If Q_OBJECT is in the foo.h (i.e. QObject is declared in the header file), then in the corresponding foo.cpp add the following command, preferably at the end of the file.
 
