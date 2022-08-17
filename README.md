@@ -9,7 +9,7 @@
 ## Software
 
 ```shell
-yay -S clang llvm lld lldb cmake make boost cpplint tldr gnucash wget git vim wireguard-tools v2ray-plugin-git
+yay -S clang llvm lld lldb cmake make boost cpplint tldr gnucash wget git vim wireguard-tools
 yay -S google-chrome visual-studio-code-bin fcitx5 fcitx5-qt fcitx5-configtool fcitx5-rime fcitx5-gtk
 ```
 
@@ -33,6 +33,8 @@ wget --no-check-certificate -O /opt/wireguard.sh https://raw.githubusercontent.c
 chmod 755 /opt/wireguard.sh
 
 /opt/wireguard.sh -s
+
+chmod 755 /opt/wireguard/
 
 cat /etc/wireguard/wg0_client
 
